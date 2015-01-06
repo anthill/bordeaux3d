@@ -194,15 +194,16 @@ module.exports = function(camera, scene, domElement){
     };
     
     return function(x, y){
-        var havePointerLock = 'pointerLockElement' in document ||
-        'mozPointerLockElement' in document ||
-        'webkitPointerLockElement' in document;
 
-        document.body.requestPointerLock = document.body.requestPointerLock ||
-            document.body.mozRequestPointerLock ||
-            document.body.webkitRequestPointerLock;
+        var havePointerLock = 'pointerLockElement' in domElement ||
+        'mozPointerLockElement' in domElement ||
+        'webkitPointerLockElement' in domElement;
+
+        domElement.requestPointerLock = domElement.requestPointerLock ||
+            domElement.mozRequestPointerLock ||
+            domElement.webkitRequestPointerLock;
         // Ask the browser to lock the pointer
-        document.body.requestPointerLock();
+        domElement.requestPointerLock();
 
         
 
@@ -226,9 +227,10 @@ module.exports = function(camera, scene, domElement){
         lookAtPoint = new THREE.Vector3( camera.position.x, camera.position.y + DISTANCE_TO_LOOK_AT, camera.position.z )
         camera.lookAt( lookAtPoint );
 
+        
         window.addEventListener('keydown', onKeyDown);
         window.addEventListener('keyup', onKeyUp);
-        document.body.addEventListener("mousemove", headMovement, false);
+        domElement.addEventListener("mousemove", headMovement, false);
 
         return function desactivate(){
 
@@ -240,8 +242,8 @@ module.exports = function(camera, scene, domElement){
             window.removeEventListener('keydown', onKeyDown);
             window.removeEventListener('keyup', onKeyUp);
 
-            document.body.removeEventListener("mousemove", headMovement, false);
-            document.exitPointerLock();
+            domElement.removeEventListener("mousemove", headMovement, false);
+            // canvas.exitPointerLock();
 
         };
     }

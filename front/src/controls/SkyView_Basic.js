@@ -76,12 +76,12 @@ module.exports = function(camera, domElement){
         // looking North (y=1)
         
         window.addEventListener( 'keydown', onKeyDown );
-        window.addEventListener( 'wheel', onScroll );
+        domElement.addEventListener( 'wheel', onScroll );
 
         return function desactivate(){
             // In Chrome listening to keypress doesn't work for whatever reason
             window.removeEventListener( 'keydown', onKeyDown );
-            window.removeEventListener( 'wheel', onScroll );
+            domElement.removeEventListener( 'wheel', onScroll );
         };
     }
     

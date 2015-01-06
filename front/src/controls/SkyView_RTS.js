@@ -71,10 +71,10 @@ module.exports = function(camera, domElement){
         var deltaX = e.clientX - canvasBoundingRect.width/2;
         var deltaZ = e.clientY - canvasBoundingRect.height/2;
 
-        var thresX = canvasBoundingRect.width*49/100;
-        var normX = canvasBoundingRect.width/2 - canvasBoundingRect.width*49/100;
-        var thresZ = canvasBoundingRect.height*45/100;
-        var normZ = canvasBoundingRect.height/2 - canvasBoundingRect.height*45/100;
+        var thresX = canvasBoundingRect.width*99/200;
+        var normX = canvasBoundingRect.width/2 - canvasBoundingRect.width*99/200;
+        var thresZ = canvasBoundingRect.height*99/200;
+        var normZ = canvasBoundingRect.height/2 - canvasBoundingRect.height*99/200;
 
         if(Math.abs(deltaX) > thresX || Math.abs(deltaZ) > thresZ){
 
@@ -99,6 +99,15 @@ module.exports = function(camera, domElement){
             cancelAnimationFrame(moveAnimationFrame);
             moveAnimationFrame = undefined;
         }
+    }
+
+    function mouseLeave(){
+        alpha = 0;
+        beta = 0;
+        console.log("mouse leaves");
+
+        cancelAnimationFrame(moveAnimationFrame);
+        moveAnimationFrame = undefined;
     }
 
     var ZOOM_BY_DELTA = 25;
@@ -133,15 +142,19 @@ module.exports = function(camera, domElement){
         camera.lookAt( new THREE.Vector3( x, y, 0 ) );
         // looking North (y=1)
         
-        window.addEventListener('keydown', onKeyDown );
-        window.addEventListener('wheel', onScroll );
-        window.addEventListener('mousemove', mouseMoveListener);
+        // window.addEventListener('keydown', onKeyDown );
+        domElement.addEventListener('wheel', onScroll );
+
+        domElement.addEventListener('mouseleave', mouseLeave);
+
+        domElement.addEventListener('mousemove', mouseMoveListener);
 
         return function desactivate(){
             // In Chrome listening to keypress doesn't work for whatever reason
-            window.removeEventListener('keydown', onKeyDown );
-            window.removeEventListener('wheel', onScroll );
-            window.removeEventListener('mousemove', mouseMoveListener);
+            // window.removeEventListener('keydown', onKeyDown );
+            domElement.removeEventListener('wheel', onScroll );
+            domElement.removeEventListener('mousemove', mouseMoveListener);
+            domElement.removeEventListener('mouseleave', mouseLeave);
             cancelAnimationFrame(moveAnimationFrame);
             moveAnimationFrame = undefined;
         };
