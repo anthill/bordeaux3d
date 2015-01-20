@@ -1,16 +1,22 @@
 "use strict";
 
 // City-core
-var cityAPIOrigin = "https://city-api.ants.builders";
-var bordeaux3dCore = require(cityAPIOrigin +'/front/index.js');
+var cityAPIOrigin = "http://localhost:9000";
+// var cityAPIOrigin = "https://city-api.ants.builders:9000";
+var bordeaux3dCore = require('city-core');
+var MAX_Y = require('city-core/front/MAX_Y.js');
 
 // City-blocks
-var SkyViewControls = require('city-blocks/controls/SkyView_RTS.js');
-var FirstPersonControls = require('city-blocks/controls/FirstPerson_PointerLock.js');
+// var SkyViewControls = require('city-blocks/controls/SkyView_RTS.js');
+// var FirstPersonControls = require('city-blocks/controls/FirstPerson_PointerLock.js');
+var SkyViewControls = require('city-blocks/controls/SkyView_Basic.js');
+var FirstPersonControls = require('city-blocks/controls/FirstPerson_Basic.js');
 var SunPosition = require('city-blocks/utils/SunPosition.js');
 var GeoConverter = require('city-blocks/utils/geo/geoConverter.js');
 var GeoCode = require('city-blocks/utils/geo/geoCode.js');
 var GUI = require('city-blocks/gui/GUI_basic.js');
+
+var THREE = require('three');
 
 var guiControls = GUI.guiControls;
 
@@ -30,6 +36,27 @@ var currentControls = "Sky";
 var INITIAL_ALTITUDE = 200;
 var SUN_ALTITUDE = 300;
 
+var sunLight = new THREE.DirectionalLight(0xffffff, 1);
+
+sunLight.castShadow = true;
+sunLight.shadowDarkness = 0.6;
+sunLight.shadowMapWidth = 4096;
+sunLight.shadowMapHeight = 4096;
+sunLight.shadowCameraNear = 1;
+sunLight.shadowCameraFar = 4000;
+
+sunLight.shadowCameraRight     =  200;
+sunLight.shadowCameraLeft     = -200;
+sunLight.shadowCameraTop      =  200;
+sunLight.shadowCameraBottom   = -200;
+
+var ambientLight = new THREE.AmbientLight( "#333329" ); 
+
+var lights = {
+    sun: sunLight,
+    ambient: ambientLight
+};
+
 function onMeshClicked(event){
     var detail = event.detail;
     console.log('Id', meshToBuilding.get(detail.mesh).id);
@@ -46,12 +73,27 @@ function onKeyPressFirstPerson(e){
     }
 }
 
+var splashScreen = document.body.querySelector("#splash-screen");
+
+splashScreen.addEventListener('click', function(){
+    splashScreen.style.opacity = 0;
+    console.log("click");
+});
+splashScreen.addEventListener('transitionend', function(){
+    splashScreen.remove();
+    // splashScreen.parentNode.removeChild(splashScreen);
+})
+
+
 bordeaux3DP.then(function(bordeaux3D){
 
     // initial position
     bordeaux3D.camera.position.x = 24341.22;
     bordeaux3D.camera.position.y = 10967.65;
     bordeaux3D.camera.position.z = INITIAL_ALTITUDE;
+
+    bordeaux3D.addLight(lights.sun);
+    bordeaux3D.addLight(lights.ambient);
     
     // Sun position
     bordeaux3D.camera.on('cameraviewchange', function(){ 
@@ -65,10 +107,10 @@ bordeaux3DP.then(function(bordeaux3D){
     });
 
 
-    currentAltitude = INITIAL_ALTITUDE;
+    var currentAltitude = INITIAL_ALTITUDE;
 
     function moveTo(place){
-        geoCode(place).then(function(coords) {
+        GeoCode(place).then(function(coords) {
             var newPosition = geoConverter.toLambert(coords.lon, coords.lat);
             
             bordeaux3D.camera.position = new THREE.Vector3(newPosition.X, newPosition.Y, currentAltitude);
@@ -80,9 +122,9 @@ bordeaux3DP.then(function(bordeaux3D){
         });
     }
 
-    moveTo(guiControls.address)
+    // moveTo(guiControls.address);
 
-    gui.addressControler.onFinishChange(function(value) {
+    GUI.addressControler.onFinishChange(function(value) {
         moveTo(value);
     });
 

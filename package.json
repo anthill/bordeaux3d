@@ -5,8 +5,8 @@
   "repository": "https://github.com/anthill/bordeaux3d",
   "main": "index.js",
   "scripts": {
-    "build": "browserify front/src/main.js -o front/app.js -d",
-    "watch": "watchify front/src/main.js -o front/app.js -d -v",
+    "build": "browserify index.js -o app.js -d",
+    "watch": "watchify index.js -o app.js -d -v",
     "start": "node server.js dev",
     "start-dev": "node server.js dev",
     "start-prod": "node server.js prod",
@@ -28,7 +28,9 @@
     "socket.io": "^1.0.6",
     "socket.io-client": "^1.0.6",
     "xmldom": "^0.1.19",
+    "three": "^0.68.0",
     "csv-parse": "0.0.6",
+    "city-core": "git://github.com/anthill/city-core.git",
     "city-blocks": "git://github.com/anthill/city-blocks.git"
   },
   "devDependencies": {

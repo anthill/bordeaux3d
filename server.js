@@ -16,25 +16,31 @@ var compression = require('compression');
 
 // arguments
 var mode = process.argv[2] || "dev";
-var config = require(path.join("..", "config", mode+".json")); // will throw if file not found
+var config = require(path.join(process.cwd(),"config", mode+".json")); // will throw if file not found
 
 console.log('starting in mode', mode);
 
 var PORT = config.port || 80;
-var HOST = config.host;
-if(!HOST)
-    throw 'missing host in config';
+console.log(PORT);
+// var HOST = config.host;
+// if(!HOST)
+//     throw 'missing host in config';
 
+app.get('/', function(req, res){
+	res.sendFile(path.join(__dirname, 'index.html'));
+});
 
-var server;
-if(config.https){
-    var options = {
-        key: fs.readFileSync(config.keypath),
-        cert: fs.readFileSync(config.certpath)
-    };
-    
-    server = https.createServer(options, app);
-}
-else{
-    server = http.createServer(app);
-}
+app.use("/polyfills", require('express').static(__dirname + '/polyfills'));
+
+app.get('/app.js', function(req, res){
+	res.sendFile(path.join(__dirname, 'app.js'));
+});
+
+var server = http.createServer(app);
+
+server.listen(PORT, function () {
+    console.log('Server running on', [
+        'http://',
+        PORT
+    ].join(''));
+});
