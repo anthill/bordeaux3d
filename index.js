@@ -8,10 +8,27 @@ var bordeaux3dCore = require(cityAPIOrigin +'/front/index.js');
 var SkyViewControls = require('city-blocks/controls/SkyView_RTS.js');
 var FirstPersonControls = require('city-blocks/controls/FirstPerson_PointerLock.js');
 var SunPosition = require('city-blocks/utils/SunPosition.js');
-var GeoConverter = require('city-blocks/utils/geoConverter.js');
+var GeoConverter = require('city-blocks/utils/geo/geoConverter.js');
+var GeoCode = require('city-blocks/utils/geo/geoCode.js');
+var GUI = require('city-blocks/gui/GUI_basic.js');
+
+var guiControls = GUI.guiControls;
 
 var bordeaux3DP = bordeaux3dCore(document.querySelector('#view'), cityAPIOrigin);
 
+// initialise the geoconverter that will pass from a shifted lambert cc 45 to lon, lat and reverse
+// the map is shifted
+// -0.583232, 44.839270 corresponds to 1416800.1046884255, 4188402.562212417 in lambert 45
+// and to (X=119) * 200 + (x=100), (MAX_Y-(Y=115))*200 + (y=100) in the map
+var deltaX = 1416800.1046884255 - 119*200 - 100;
+var deltaY = 4188402.562212417 - (MAX_Y-115)*200 - 100;
+var geoConverter = new GeoConverter(45, deltaX, deltaY);
+
+
+var currentControls = "Sky";
+
+var INITIAL_ALTITUDE = 200;
+var SUN_ALTITUDE = 300;
 
 function onMeshClicked(event){
     var detail = event.detail;
@@ -29,38 +46,69 @@ function onKeyPressFirstPerson(e){
     }
 }
 
-var activatedControl = "Sky";
-
-var skyViewAltitude = 200;
-
 bordeaux3DP.then(function(bordeaux3D){
 
     // initial position
     bordeaux3D.camera.position.x = 24341.22;
     bordeaux3D.camera.position.y = 10967.65;
-    bordeaux3D.camera.position.z = skyViewAltitude;
+    bordeaux3D.camera.position.z = INITIAL_ALTITUDE;
+    
+    // Sun position
+    bordeaux3D.camera.on('cameraviewchange', function(){ 
+        var pos = bordeaux3D.camera.position;
+        var sun = lights.sun;
+        sun.position.x = pos.x;
+        sun.position.y = pos.y;
+        sun.position.z = SUN_ALTITUDE;
+        var sunPos = SunPosition(sun, lights.ambient);
+        sun.target.position.set(pos.x + sunPos[0], pos.y + sunPos[1], 0);
+    });
 
-    function toggleControls(){
-        console.log('toggleControls', activatedControl);
 
-        if(activatedControl === "Sky"){
-            bordeaux3D.changeControls(SkyViewControls, { z: skyViewAltitude });
-            //window.addEventListener('meshClicked', onMeshClicked);
+    currentAltitude = INITIAL_ALTITUDE;
+
+    function moveTo(place){
+        geoCode(place).then(function(coords) {
+            var newPosition = geoConverter.toLambert(coords.lon, coords.lat);
+            
+            bordeaux3D.camera.position = new THREE.Vector3(newPosition.X, newPosition.Y, currentAltitude);
+            bordeaux3D.camera.lookAt( new THREE.Vector3(newPosition.X, newPosition.Y, 0) );
+            bordeaux3D.camera.up = new THREE.Vector3(0, 1, 0);
+
+            toggleControls('Sky');
+            currentControls = 'Sky';
+        });
+    }
+
+    moveTo(guiControls.address)
+
+    gui.addressControler.onFinishChange(function(value) {
+        moveTo(value);
+    });
+
+
+
+    function toggleControls(mode){
+        console.log('toggleControls', mode);
+
+        if(mode === "Sky"){
+            bordeaux3D.changeControls(SkyViewControls, { z: currentAltitude });
             window.removeEventListener('keydown', onKeyPressFirstPerson);
             window.addEventListener('meshClicked', onMeshClicked);
             
-            nextControls = "FirstPerson";
+            currentControls = "FirstPerson";
         }
         else{
-            skyViewAltitude = bordeaux3D.camera.position.z;
+            currentAltitude = bordeaux3D.camera.position.z;
             bordeaux3D.changeControls(FirstPersonControls);
             window.removeEventListener('meshClicked', onMeshClicked);
             window.addEventListener('keydown', onKeyPressFirstPerson);
 
-            nextControls = "Sky";
+            currentControls = "Sky";
         }
     }
-    toggleControls();
+
+    toggleControls(currentControls);
 
 });
 
