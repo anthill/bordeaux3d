@@ -6,18 +6,17 @@
   "main": "index.js",
   "scripts": {
     "build": "browserify front/src/main.js -o front/app.js -d",
+    "watch": "watchify front/src/main.js -o front/app.js -d -v",
     "start": "node server.js dev",
     "start-dev": "node server.js dev",
     "start-prod": "node server.js prod",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "watch": "watchify front/src/main.js -o front/app.js -d -v"
   },
   "author": "",
   "license": "MIT",
   "dependencies": {
     "browserify": "^5.0.0",
     "compression": "^1.1.0",
-    "dat-gui": "^0.5.0",
     "es6-map": "^0.1.0",
     "es6-promise": "^1.0.0",
     "es6-promisify": "^1.1.1",
@@ -28,10 +27,9 @@
     "rbush": "^1.3.2",
     "socket.io": "^1.0.6",
     "socket.io-client": "^1.0.6",
-    "suncalc": "^1.5.2",
-    "three": "^0.68.0",
     "xmldom": "^0.1.19",
-    "csv-parse": "0.0.6"
+    "csv-parse": "0.0.6",
+    "city-blocks": "git://github.com/anthill/city-blocks.git"
   },
   "devDependencies": {
     "grunt": "^0.4.5",
