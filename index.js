@@ -1,8 +1,7 @@
 "use strict";
 
 // City-core
-var cityAPIOrigin = "http://localhost:9000";
-// var cityAPIOrigin = "https://city-api.ants.builders:9000";
+var cityAPIOrigin = "https://city-api.ants.builders";
 var bordeaux3dCore = require('city-core');
 var MAX_Y = require('city-core/front/MAX_Y.js');
 
