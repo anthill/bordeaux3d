@@ -1,5 +1,7 @@
 # Bordeaux 3d
 
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/anthill/bordeaux3d.ants.builders?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 A project to visualize Bordeaux and the CUB in 3D. Based on [Open Data](http://data.lacub.fr/data.php?themes=1&layer=344).
 
 This project is the core of Bordeaux3D.
