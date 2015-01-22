@@ -31,7 +31,7 @@
     "three": "^0.68.0",
     "csv-parse": "0.0.6",
     "city-core": "git://github.com/anthill/city-core.git",
-    "city-blocks": "git://github.com/anthill/city-blocks.git"
+    "city-blocks": "git://github.com/iOiurson/city-blocks.git#new"
   },
   "devDependencies": {
     "grunt": "^0.4.5",

@@ -1,25 +1,30 @@
 "use strict";
 
 // City-core
-var cityAPIOrigin = "https://city-api.ants.builders";
+var cityAPIOrigin = "http://localhost:9000";
+// var cityAPIOrigin = "https://city-api.ants.builders";
 var bordeaux3dCore = require('city-core');
 var MAX_Y = require('city-core/front/MAX_Y.js');
+var meshToBuilding = require('city-core/front/meshToBuilding.js');
 
 // City-blocks
-// var SkyViewControls = require('city-blocks/controls/SkyView_RTS.js');
-// var FirstPersonControls = require('city-blocks/controls/FirstPerson_PointerLock.js');
-var SkyViewControls = require('city-blocks/controls/SkyView_Basic.js');
-var FirstPersonControls = require('city-blocks/controls/FirstPerson_Basic.js');
+var SkyViewControls = require('city-blocks/controls/SkyView_RTS.js');
+var FirstPersonControls = require('city-blocks/controls/FirstPerson_PointerLock.js');
+// var SkyViewControls = require('city-blocks/controls/SkyView_Basic.js');
+// var FirstPersonControls = require('city-blocks/controls/FirstPerson_Basic.js');
 var SunPosition = require('city-blocks/utils/SunPosition.js');
 var GeoConverter = require('city-blocks/utils/geo/geoConverter.js');
 var GeoCode = require('city-blocks/utils/geo/geoCode.js');
+var raycasting = require('city-blocks/utils/ray/raycasting.js');
 var GUI = require('city-blocks/gui/GUI_basic.js');
 
 var THREE = require('three');
 
 var guiControls = GUI.guiControls;
 
-var bordeaux3DP = bordeaux3dCore(document.querySelector('#view'), cityAPIOrigin);
+var view = document.querySelector('#view');
+
+var bordeaux3DP = bordeaux3dCore(view, cityAPIOrigin);
 
 // initialise the geoconverter that will pass from a shifted lambert cc 45 to lon, lat and reverse
 // the map is shifted
@@ -56,22 +61,6 @@ var lights = {
     ambient: ambientLight
 };
 
-function onMeshClicked(event){
-    var detail = event.detail;
-    console.log('Id', meshToBuilding.get(detail.mesh).id);
-    console.log('Intersection point', detail.point.x, detail.point.y, detail.point.z); 
-
-    ret.switchToFirstPersonView(detail.point.x, detail.point.y);
-}
-
-function onKeyPressFirstPerson(e){
-    console.log('key press while first person', e.keyCode);
-    if(e.keyCode === 27){ // escape
-        e.preventDefault();
-        ret.switchToSkyView(camera.position.x, camera.position.y);
-    }
-}
-
 var splashScreen = document.body.querySelector("#splash-screen");
 
 splashScreen.addEventListener('click', function(){
@@ -82,7 +71,6 @@ splashScreen.addEventListener('transitionend', function(){
     splashScreen.remove();
     // splashScreen.parentNode.removeChild(splashScreen);
 })
-
 
 bordeaux3DP.then(function(bordeaux3D){
 
@@ -105,6 +93,8 @@ bordeaux3DP.then(function(bordeaux3D){
         sun.target.position.set(pos.x + sunPos[0], pos.y + sunPos[1], 0);
     });
 
+    // activate raycasting
+    raycasting(bordeaux3D.camera, bordeaux3D.scene, view);
 
     var currentAltitude = INITIAL_ALTITUDE;
 
@@ -116,8 +106,9 @@ bordeaux3DP.then(function(bordeaux3D){
             bordeaux3D.camera.lookAt( new THREE.Vector3(newPosition.X, newPosition.Y, 0) );
             bordeaux3D.camera.up = new THREE.Vector3(0, 1, 0);
 
-            toggleControls('Sky');
             currentControls = 'Sky';
+            toggleControls(currentControls);
+
         });
     }
 
@@ -127,28 +118,47 @@ bordeaux3DP.then(function(bordeaux3D){
         moveTo(value);
     });
 
-
-
     function toggleControls(mode){
         console.log('toggleControls', mode);
 
         if(mode === "Sky"){
             bordeaux3D.changeControls(SkyViewControls, { z: currentAltitude });
             window.removeEventListener('keydown', onKeyPressFirstPerson);
-            window.addEventListener('meshClicked', onMeshClicked);
-            
-            currentControls = "FirstPerson";
+            view.addEventListener('meshClicked', onMeshClicked);
         }
         else{
+            console.log('Switching to FPV: ', bordeaux3D.camera.position);
             currentAltitude = bordeaux3D.camera.position.z;
             bordeaux3D.changeControls(FirstPersonControls);
-            window.removeEventListener('meshClicked', onMeshClicked);
+            view.removeEventListener('meshClicked', onMeshClicked);
             window.addEventListener('keydown', onKeyPressFirstPerson);
-
-            currentControls = "Sky";
         }
     }
 
+    function onMeshClicked(event){
+        var detail = event.detail;
+        console.log('Id', meshToBuilding.get(detail.mesh).id);
+        console.log('Intersection point', detail.point.x, detail.point.y, detail.point.z);
+        
+        bordeaux3D.camera.position.x = detail.point.x;
+        bordeaux3D.camera.position.y = detail.point.y;
+
+        console.log('camera position: ', bordeaux3D.camera.x, bordeaux3D.camera.y, bordeaux3D.camera.z);
+
+        currentControls = "FirstPerson";
+        toggleControls(currentControls);
+    }
+
+    function onKeyPressFirstPerson(e){
+        console.log('key press while first person', e.keyCode);
+        if(e.keyCode === 27){ // escape
+            e.preventDefault();
+            currentControls = "Sky";
+            toggleControls(currentControls);
+        }
+    }
+
+    // toggle initial controls
     toggleControls(currentControls);
 
 });
