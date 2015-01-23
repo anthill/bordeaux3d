@@ -49,10 +49,10 @@ sunLight.shadowMapHeight = 4096;
 sunLight.shadowCameraNear = 1;
 sunLight.shadowCameraFar = 4000;
 
-sunLight.shadowCameraRight     =  200;
-sunLight.shadowCameraLeft     = -200;
-sunLight.shadowCameraTop      =  200;
-sunLight.shadowCameraBottom   = -200;
+sunLight.shadowCameraRight = 200;
+sunLight.shadowCameraLeft = -200;
+sunLight.shadowCameraTop = 200;
+sunLight.shadowCameraBottom = -200;
 
 var ambientLight = new THREE.AmbientLight( "#333329" ); 
 
@@ -69,7 +69,6 @@ splashScreen.addEventListener('click', function(){
 });
 splashScreen.addEventListener('transitionend', function(){
     splashScreen.remove();
-    // splashScreen.parentNode.removeChild(splashScreen);
 })
 
 bordeaux3DP.then(function(bordeaux3D){
@@ -82,14 +81,15 @@ bordeaux3DP.then(function(bordeaux3D){
     bordeaux3D.addLight(lights.sun);
     bordeaux3D.addLight(lights.ambient);
     
-    // Sun position
+    // Sun position changes only so that light.shadowCamera follows view
     bordeaux3D.camera.on('cameraviewchange', function(){ 
         var pos = bordeaux3D.camera.position;
         var sun = lights.sun;
         sun.position.x = pos.x;
         sun.position.y = pos.y;
         sun.position.z = SUN_ALTITUDE;
-        var sunPos = SunPosition(sun, lights.ambient);
+        console.log('cameraViewChange');
+        var sunPos = SunPosition(guiControls.hour, sun, lights.ambient);
         sun.target.position.set(pos.x + sunPos[0], pos.y + sunPos[1], 0);
     });
 
@@ -116,6 +116,11 @@ bordeaux3DP.then(function(bordeaux3D){
 
     GUI.addressControler.onFinishChange(function(value) {
         moveTo(value);
+    });
+
+    GUI.hourControler.onChange(function(){
+        SunPosition(guiControls.hour, lights.sun, lights.ambient);
+        bordeaux3D.render();
     });
 
     function toggleControls(mode){
