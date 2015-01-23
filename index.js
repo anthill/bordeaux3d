@@ -1,8 +1,7 @@
 "use strict";
 
 // City-core
-var cityAPIOrigin = "http://localhost:9000";
-// var cityAPIOrigin = "https://city-api.ants.builders";
+var cityAPIOrigin = "https://city-api.ants.builders";
 var bordeaux3dCore = require('city-core');
 var MAX_Y = require('city-core/front/MAX_Y.js');
 var meshToBuilding = require('city-core/front/meshToBuilding.js');
@@ -10,8 +9,6 @@ var meshToBuilding = require('city-core/front/meshToBuilding.js');
 // City-blocks
 var SkyViewControls = require('city-blocks/controls/SkyView_RTS.js');
 var FirstPersonControls = require('city-blocks/controls/FirstPerson_PointerLock.js');
-// var SkyViewControls = require('city-blocks/controls/SkyView_Basic.js');
-// var FirstPersonControls = require('city-blocks/controls/FirstPerson_Basic.js');
 var SunPosition = require('city-blocks/utils/SunPosition.js');
 var GeoConverter = require('city-blocks/utils/geo/geoConverter.js');
 var GeoCode = require('city-blocks/utils/geo/geoCode.js');
@@ -65,7 +62,6 @@ var splashScreen = document.body.querySelector("#splash-screen");
 
 splashScreen.addEventListener('click', function(){
     splashScreen.style.opacity = 0;
-    console.log("click");
 });
 splashScreen.addEventListener('transitionend', function(){
     splashScreen.remove();
@@ -88,7 +84,6 @@ bordeaux3DP.then(function(bordeaux3D){
         sun.position.x = pos.x;
         sun.position.y = pos.y;
         sun.position.z = SUN_ALTITUDE;
-        console.log('cameraViewChange');
         var sunPos = SunPosition(guiControls.hour, sun, lights.ambient);
         sun.target.position.set(pos.x + sunPos[0], pos.y + sunPos[1], 0);
     });
@@ -124,7 +119,6 @@ bordeaux3DP.then(function(bordeaux3D){
     });
 
     function toggleControls(mode){
-        console.log('toggleControls', mode);
 
         if(mode === "Sky"){
             bordeaux3D.changeControls(SkyViewControls, { z: currentAltitude });
@@ -142,13 +136,11 @@ bordeaux3DP.then(function(bordeaux3D){
 
     function onMeshClicked(event){
         var detail = event.detail;
-        console.log('Id', meshToBuilding.get(detail.mesh).id);
-        console.log('Intersection point', detail.point.x, detail.point.y, detail.point.z);
+        // console.log('Id', meshToBuilding.get(detail.mesh).id);
+        // console.log('Intersection point', detail.point.x, detail.point.y, detail.point.z);
         
         bordeaux3D.camera.position.x = detail.point.x;
         bordeaux3D.camera.position.y = detail.point.y;
-
-        console.log('camera position: ', bordeaux3D.camera.x, bordeaux3D.camera.y, bordeaux3D.camera.z);
 
         currentControls = "FirstPerson";
         toggleControls(currentControls);
