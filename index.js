@@ -174,18 +174,24 @@ bordeaux3DP.then(function(bordeaux3D){
         }
     }
 
-    var old = undefinedwx;
+    var old = undefined;
     function onCameraViewChangeScan(){
         var ray = createRay.fromView();
-        var mesh = bordeaux3D.getMeshFromRay(ray).object;
+        var result = bordeaux3D.getMeshFromRay(ray);
 
-        if (mesh !== old){
-            if (old)
-                old.material.color.setHex(0xd4cfb0);
-            
-            mesh.material.color.setHex(0xFF0000);
-            old = mesh;
+        if (result){
+            var mesh = result.object;
+
+            if (mesh !== old){
+                if (old)
+                    old.material.color.setHex(0xd4cfb0);
+                
+                mesh.material.color.setHex(0xFF0000);
+                old = mesh;
+            }
         }
+            
+        
             
     }
 
