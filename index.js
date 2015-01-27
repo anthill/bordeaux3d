@@ -3,7 +3,8 @@
 // City-core
 var bordeaux3dCore = require('city-core');
 var MAX_Y = require('city-core/front/MAX_Y.js');
-var meshDefaultColor = require('city-core/common/meshDefaultColor.js');
+var meshColor = require('city-core/common/meshDefaultColor.js');
+var meshInfos = require('city-core/front/meshInfos.js');
 
 // City-blocks
 var SkyViewControls = require('city-blocks/controls/SkyView_RTS.js');
@@ -11,7 +12,6 @@ var FirstPersonControls = require('city-blocks/controls/FirstPerson_PointerLock.
 var SunPosition = require('city-blocks/utils/SunPosition.js');
 var GeoConverter = require('city-blocks/utils/geo/geoConverter.js');
 var GeoCode = require('city-blocks/utils/geo/geoCode.js');
-var raycasting = require('city-blocks/utils/ray/raycasting.js');
 var _createRay = require('city-blocks/utils/ray/createRay.js');
 var GUI = require('city-blocks/gui/GUI_basic.js');
 
@@ -19,7 +19,8 @@ var THREE = require('three');
 
 var guiControls = GUI.guiControls;
 
-var cityAPIOrigin = "https://city-api.ants.builders";
+// var cityAPIOrigin = "https://city-api.ants.builders";
+var cityAPIOrigin = "http://localhost:9000";
 
 var view = document.querySelector('#view');
 
@@ -78,6 +79,7 @@ bordeaux3DP.then(function(bordeaux3D){
 
     bordeaux3D.addLight(lights.sun);
     bordeaux3D.addLight(lights.ambient);
+    console.log('light: ', lights);
     
     // Sun position changes only so that light.shadowCamera follows view
     bordeaux3D.camera.on('cameraviewchange', function(){ 
@@ -181,18 +183,16 @@ bordeaux3DP.then(function(bordeaux3D){
 
         if (result){
             var mesh = result.object;
+            var infos = meshInfos.get(mesh); 
 
             if (mesh !== old){
                 if (old)
-                    old.material.color.setHex(0xd4cfb0);
+                    old.material.color.setHex(meshColor[infos.type]);
                 
                 mesh.material.color.setHex(0xFF0000);
                 old = mesh;
             }
-        }
-            
-        
-            
+        }   
     }
 
 });
