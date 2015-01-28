@@ -183,12 +183,15 @@ bordeaux3DP.then(function(bordeaux3D){
 
         if (result){
             var mesh = result.object;
-            var infos = meshInfos.get(mesh); 
+            var infos = meshInfos.get(mesh);
+            console.log('Mesh color: ', meshColor[infos.type]);
 
             if (mesh !== old){
-                if (old)
-                    old.material.color.setHex(meshColor[infos.type]);
-                
+                if (old){
+                    var oldType = meshInfos.get(old).type;
+                    old.material.color.setHex(meshColor[oldType]);
+                }
+                    
                 mesh.material.color.setHex(0xFF0000);
                 old = mesh;
             }
