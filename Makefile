@@ -13,7 +13,7 @@ startcontainer:
 	@cp package.json docker/.tmp/
 	@cd docker && docker build -t ants/bordeaux3d:v1 .
 	@rm -rf docker/.tmp
-	@docker run -d -p 9100:9100 ants/bordeaux3d:v1
+	@docker run -d -e VIRTUAL_HOST=bordeaux3d.ants.builders -e VIRTUAL_PORT=9100 -p 9100:9100 ants/bordeaux3d:v1
 	$(ECHO_SUCCESS) "Succesfully launched bordeaux3d container."
 
 
