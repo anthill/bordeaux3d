@@ -1,10 +1,11 @@
 "use strict";
 
 // City-core
-var bordeaux3dCore = require('city-core');
-var MAX_Y = require('city-core/front/MAX_Y.js');
-var meshColor = require('city-core/common/meshDefaultColor.js');
-var meshInfos = require('city-core/front/meshInfos.js');
+var bordeaux3dCore = require('../front/index.js');
+var MAX_Y = require('../front/MAX_Y.js');
+var meshColor = require('../front/meshDefaultColor.js');
+var infosFromMesh = require('../front/infosFromMesh.js');
+var meshFromId = require('../front/meshFromId.js');
 
 // City-blocks
 var SkyViewControls = require('city-blocks/controls/SkyView_RTS.js');
@@ -19,8 +20,8 @@ var THREE = require('three');
 
 var guiControls = GUI.guiControls;
 
-// var cityAPIOrigin = "https://city-api.ants.builders";
-var cityAPIOrigin = "http://localhost:9000";
+var cityAPIOrigin = "https://city-api.ants.builders";
+// var cityAPIOrigin = "http://localhost:9000";
 
 var view = document.querySelector('#view');
 
@@ -129,6 +130,7 @@ bordeaux3DP.then(function(bordeaux3D){
             window.removeEventListener('keydown', onKeyPressToggleSky);
             // add listeners
             view.addEventListener('click', onMeshClickedToggleFirstPerson);
+            // view.addEventListener('click', removeBuilding);
             bordeaux3D.camera.off('cameraviewchange', onCameraViewChangeScan);
 
             // change controls
@@ -139,6 +141,7 @@ bordeaux3DP.then(function(bordeaux3D){
             // remove listeners
             bordeaux3D.camera.on('cameraviewchange', onCameraViewChangeScan);
             view.removeEventListener('click', onMeshClickedToggleFirstPerson);
+
             // add listeners
             window.addEventListener('keydown', onKeyPressToggleSky);
 
@@ -151,9 +154,16 @@ bordeaux3DP.then(function(bordeaux3D){
     // toggle initial controls
     toggleControls(currentControls);
 
+    function removeBuilding (event){
+        var ray = createRay.fromMouse(event);
+        var mesh = bordeaux3D.getMeshFromRay(ray).object;
+        bordeaux3D.removeMesh(mesh);
+        bordeaux3D.render();
+    }
+
     // functions to be activated while Sky view is on
     function onMeshClickedToggleFirstPerson(event){
-        var ray = createRay.fromMouse(event);
+        var ray = createRay.fromMouse(event.clientX, event.clientY);
         var point = bordeaux3D.getMeshFromRay(ray).point;
 
         console.log("new");
@@ -181,14 +191,14 @@ bordeaux3DP.then(function(bordeaux3D){
         var ray = createRay.fromView();
         var result = bordeaux3D.getMeshFromRay(ray);
 
-        if (result){
+        if (result && infosFromMesh.get(result.object).type === 'building'){
             var mesh = result.object;
-            var infos = meshInfos.get(mesh);
-            console.log('Mesh color: ', meshColor[infos.type]);
+            var infos = infosFromMesh.get(mesh);
+            // console.log('Mesh color: ', meshColor[infos.type]);
 
             if (mesh !== old){
                 if (old){
-                    var oldType = meshInfos.get(old).type;
+                    var oldType = infosFromMesh.get(old).type;
                     old.material.color.setHex(meshColor[oldType]);
                 }
                     
