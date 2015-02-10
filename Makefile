@@ -4,7 +4,6 @@ all: startcontainer
 
 startcontainer:
 	@mkdir docker/.tmp
-	@cp -r config docker/.tmp/
 	@cp -r polyfills docker/.tmp/
 	@cp Gruntfile.js docker/.tmp/
 	@cp index.html docker/.tmp/
