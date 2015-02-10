@@ -1,11 +1,11 @@
 "use strict";
 
 // City-core
-var bordeaux3dCore = require('../front/index.js');
-var MAX_Y = require('../front/MAX_Y.js');
-var meshColor = require('../front/meshDefaultColor.js');
-var infosFromMesh = require('../front/infosFromMesh.js');
-var meshFromId = require('../front/meshFromId.js');
+var bordeaux3dCore = require('city-core');
+var MAX_Y = require('city-core/front/MAX_Y.js');
+var meshColor = require('city-core/front/meshDefaultColor.js');
+var infosFromMesh = require('city-core/front/infosFromMesh.js');
+var meshFromId = require('city-core/front/meshFromId.js');
 
 // City-blocks
 var SkyViewControls = require('city-blocks/controls/SkyView_RTS.js');
