@@ -163,12 +163,13 @@ bordeaux3DP.then(function(bordeaux3D){
 
     // functions to be activated while Sky view is on
     function onMeshClickedToggleFirstPerson(event){
-        var ray = createRay.fromMouse(event.clientX, event.clientY);
+        var mousePos = {
+            x: event.clientX,
+            y: event.clientY
+        };
+
+        var ray = createRay.fromMouse(mousePos);
         var point = bordeaux3D.getMeshFromRay(ray).point;
-
-        console.log('mouse', event.clientX, event.clientY);
-
-        console.log('RAY', ray, 'POINT', point);
 
         bordeaux3D.camera.position.x = point.x;
         bordeaux3D.camera.position.y = point.y;
