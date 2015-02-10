@@ -9,6 +9,7 @@ startcontainer:
 	@cp index.html docker/.tmp/
 	@cp index.js docker/.tmp/
 	@cp server.js docker/.tmp/
+	@cp favicon.ico docker/.tmp/
 	@cp package.json docker/.tmp/
 	@cd docker && docker build -t ants/bordeaux3d:v1 .
 	@rm -rf docker/.tmp
