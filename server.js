@@ -14,13 +14,7 @@ var https = require('https');
 
 var compression = require('compression');
 
-// arguments
-var mode = process.argv[2] || "dev";
-var config = require(path.join(process.cwd(),"config", mode+".json")); // will throw if file not found
-
-console.log('starting in mode', mode);
-
-var PORT = config.port || 80;
+var PORT = 9100;
 console.log(PORT);
 // var HOST = config.host;
 // if(!HOST)
