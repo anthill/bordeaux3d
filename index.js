@@ -166,8 +166,10 @@ bordeaux3DP.then(function(bordeaux3D){
         var ray = createRay.fromMouse(event.clientX, event.clientY);
         var point = bordeaux3D.getMeshFromRay(ray).point;
 
+        console.log('mouse', event.clientX, event.clientY);
+
         console.log('RAY', ray, 'POINT', point);
-        
+
         bordeaux3D.camera.position.x = point.x;
         bordeaux3D.camera.position.y = point.y;
 
