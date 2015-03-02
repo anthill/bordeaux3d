@@ -1,0 +1,10 @@
+.DS_Store
+
+node_modules
+config
+app.js
+
+.gitignore
+
+Dockerfile
+.dockerignore
