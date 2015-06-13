@@ -5,8 +5,8 @@
   "repository": "https://github.com/anthill/bordeaux3d",
   "main": "index.js",
   "scripts": {
-    "build": "browserify index.js -o app.js -d",
-    "watch": "watchify index.js -o app.js -d -v",
+    "build": "browserify controllers/index.js -o app.js -d",
+    "watch": "watchify controllers/index.js -o app.js -d -v",
     "start": "node server.js dev",
     "start-dev": "node server.js dev",
     "start-prod": "node server.js prod",
